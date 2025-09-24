@@ -1,12 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { Box } from '@mui/material';
 import { AnimatePresence } from 'framer-motion';
+import WebApp from '@twa-dev/sdk';
+import { useUserStore } from './store';
 
 // Компоненты
 import Header from './components/Header';
 import BottomNav from './components/BottomNav';
-import LoadingScreen from './components/LoadingScreen'; // <-- Импорт LoadingScreen
+import LoadingScreen from './components/LoadingScreen';
 
 // Страницы
 import Dashboard from './pages/Dashboard';
@@ -16,19 +18,39 @@ import Finance from './pages/Finance';
 
 function App() {
   const location = useLocation();
-  const [loading, setLoading] = useState(true); // <-- Состояние загрузки
+  const setUser = useUserStore((state) => state.setUser);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Имитируем загрузку данных
+    try {
+      // Инициализируем приложение Telegram, если оно доступно
+      if (WebApp && WebApp.ready) {
+        WebApp.ready();
+      }
+      
+      // Безопасно получаем данные пользователя
+      // Оператор '?.' (optional chaining) предотвратит ошибку, если initDataUnsafe или user не существуют
+      const userData = WebApp?.initDataUnsafe?.user;
+      
+      if (userData) {
+        setUser(userData);
+        console.log('User data loaded:', userData);
+      } else {
+        console.log('Running on localhost or user data not available.');
+      }
+    } catch (error) {
+      console.error("Failed to initialize Telegram WebApp:", error);
+    }
+
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 2000); // Показываем экран загрузки 2 секунды
+    }, 2000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [setUser]);
 
   if (loading) {
-    return <LoadingScreen />; // Показываем экран загрузки
+    return <LoadingScreen />;
   }
 
   return (

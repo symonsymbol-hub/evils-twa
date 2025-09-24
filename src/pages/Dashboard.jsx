@@ -91,7 +91,7 @@ function Dashboard() {
         </motion.div>
       </motion.div>
       <TariffModal open={modalOpen} onClose={() => setModalOpen(false)} tariff={selectedTariff} />
-    </>
+<script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="CRMcabinet_Bot" data-size="large" data-radius="20" data-auth-url="https://evils-twa.vercel.app/f" data-request-access="write"></script>    </>
   );
 }
 
